@@ -2,7 +2,10 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import fauna from 'faunadb';
 
 const { query } = fauna;
-const client = new fauna.Client({ secret: process.env.FAUNA_API_KEY });
+const client = new fauna.Client({
+  secret: process.env.FAUNA_API_KEY as string,
+  domain: 'db.us.fauna.com'
+});
 
 interface ImagesQueryResponse {
   after?: {
@@ -52,7 +55,7 @@ export default async function handler(
     const { after } = req.query;
 
     const queryOptions = {
-      size: 6,
+      size: 2,
       ...(after && { after: query.Ref(query.Collection('images'), after) }),
     };
 
@@ -83,5 +86,5 @@ export default async function handler(
       });
   }
 
-  return res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+  return res.status(405).json({ error: `Method '${req.method}' Not Allowed` })
 }
